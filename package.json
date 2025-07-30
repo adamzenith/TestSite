@@ -1,0 +1,17 @@
+{
+  "name": "cv-site",
+  "version": "1.0.0",
+  "description": "Personal CV website deployed on Cloudflare Workers",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "preview": "wrangler preview"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  },
+  "keywords": ["cloudflare", "workers", "cv", "resume"],
+  "author": "Your Name",
+  "license": "MIT"
+}
