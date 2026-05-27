@@ -1,6 +1,19 @@
 /* Overrides on top of readable.css.
    Keep this file tiny — let readable.css do the heavy lifting. */
 
+:root {
+    color-scheme: light;
+}
+
+html, body {
+    background: #e8dcc4;
+    color: #000;
+}
+
+a {
+    color: #000;
+}
+
 .profile-header {
     display: flex;
     align-items: center;

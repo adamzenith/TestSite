@@ -1,13 +1,8 @@
-const htmlContent = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matthias Adamsen</title>
+const HEAD_LINKS = `
     <link rel="stylesheet" type="text/css" href="https://codeberg.org/Freedom-to-Write/readable.css/raw/branch/main/readable.min.css">
-    <link rel="stylesheet" type="text/css" href="/styles.css">
-</head>
-<body>
+    <link rel="stylesheet" type="text/css" href="/styles.css">`;
+
+const HEADER = `
     <header>
         <div class="profile-header">
             <img class="profile-photo" src="/profile.jpg" alt="Photo of Matthias Adamsen">
@@ -16,16 +11,63 @@ const htmlContent = `<!DOCTYPE html>
                 <p>A short tagline goes here &mdash; one line about what you do.</p>
             </div>
         </div>
-    </header>
+    </header>`;
 
+const FOOTER = `
+    <footer>
+        <p>
+            &copy; <time datetime="2026">2026</time> Matthias Adamsen &middot;
+            <a href="https://github.com/">GitHub</a> &middot;
+            <a href="mailto:you@example.com">Email</a>
+        </p>
+    </footer>`;
+
+const navFor = (current) => {
+    const links = [
+        { href: '/', label: 'Home' },
+        { href: '/about', label: 'About me' },
+        { href: '/projects', label: 'Notable projects' },
+        { href: '/books', label: 'Book reviews' },
+    ];
+    return `
     <nav>
-        <a href="#about">About me</a>
-        <a href="#projects">Notable projects</a>
-        <a href="#books">Book reviews</a>
-    </nav>
+        ${links
+            .filter((l) => !(current === 'home' && l.href === '/'))
+            .map((l) => `<a href="${l.href}">${l.label}</a>`)
+            .join('\n        ')}
+    </nav>`;
+};
+
+const page = ({ title, current, body }) => `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${title}</title>${HEAD_LINKS}
+</head>
+<body>${HEADER}
+${navFor(current)}
 
     <main>
-        <section id="about">
+${body}
+    </main>
+${FOOTER}
+</body>
+</html>`;
+
+const homePage = page({
+    title: 'Matthias Adamsen',
+    current: 'home',
+    body: `        <p>
+            Welcome. Use the links above to read more about me, my projects,
+            and books I&rsquo;ve been reading.
+        </p>`,
+});
+
+const aboutPage = page({
+    title: 'About me — Matthias Adamsen',
+    current: 'about',
+    body: `        <section id="about">
             <h2>About me</h2>
             <p>
                 Write a couple of sentences about who you are, what you care about,
@@ -39,9 +81,13 @@ const htmlContent = `<!DOCTYPE html>
                 You can reach me at
                 <a href="mailto:you@example.com">you@example.com</a>.
             </p>
-        </section>
+        </section>`,
+});
 
-        <section id="projects">
+const projectsPage = page({
+    title: 'Notable projects — Matthias Adamsen',
+    current: 'projects',
+    body: `        <section id="projects">
             <h2>Notable projects</h2>
 
             <article>
@@ -60,9 +106,13 @@ const htmlContent = `<!DOCTYPE html>
                     Short description. Duplicate this &lt;article&gt; block to add more.
                 </p>
             </article>
-        </section>
+        </section>`,
+});
 
-        <section id="books">
+const booksPage = page({
+    title: 'Book reviews — Matthias Adamsen',
+    current: 'books',
+    body: `        <section id="books">
             <h2>Book reviews</h2>
 
             <article>
@@ -79,20 +129,23 @@ const htmlContent = `<!DOCTYPE html>
                 <p class="meta">Read April 2026 &middot; &#9733;&#9733;&#9733;&#9734;&#9734;</p>
                 <p>Short review.</p>
             </article>
-        </section>
-    </main>
+        </section>`,
+});
 
-    <footer>
-        <p>
-            &copy; <time datetime="2026">2026</time> Matthias Adamsen &middot;
-            <a href="https://github.com/">GitHub</a> &middot;
-            <a href="mailto:you@example.com">Email</a>
-        </p>
-    </footer>
-</body>
-</html>`;
+const cssContent = `:root {
+    color-scheme: light;
+}
 
-const cssContent = `.profile-header {
+html, body {
+    background: #e8dcc4;
+    color: #000;
+}
+
+a {
+    color: #000;
+}
+
+.profile-header {
     display: flex;
     align-items: center;
     gap: 1.5rem;
@@ -129,6 +182,17 @@ const cssContent = `.profile-header {
     }
 }`;
 
+const routes = {
+    '/': homePage,
+    '/index.html': homePage,
+    '/about': aboutPage,
+    '/about.html': aboutPage,
+    '/projects': projectsPage,
+    '/projects.html': projectsPage,
+    '/books': booksPage,
+    '/books.html': booksPage,
+};
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
@@ -141,9 +205,9 @@ export default {
       'X-XSS-Protection': '1; mode=block',
     });
 
-    if (pathname === '/' || pathname === '/index.html') {
+    if (routes[pathname]) {
       headers.set('Content-Type', 'text/html; charset=utf-8');
-      return new Response(htmlContent, { headers });
+      return new Response(routes[pathname], { headers });
     }
 
     if (pathname === '/styles.css') {
