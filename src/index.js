@@ -32,7 +32,6 @@ const navFor = (current) => {
     return `
     <nav>
         ${links
-            .filter((l) => !(current === 'home' && l.href === '/'))
             .map((l) => `<a href="${l.href}">${l.label}</a>`)
             .join('\n        ')}
     </nav>`;
@@ -203,7 +202,6 @@ export default {
     const pathname = url.pathname;
 
     const headers = new Headers({
-      'Cache-Control': 'public, max-age=86400',
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'DENY',
       'X-XSS-Protection': '1; mode=block',
@@ -211,16 +209,19 @@ export default {
 
     if (routes[pathname]) {
       headers.set('Content-Type', 'text/html; charset=utf-8');
+      headers.set('Cache-Control', 'public, max-age=300, must-revalidate');
       return new Response(routes[pathname], { headers });
     }
 
     if (pathname === '/styles.css') {
       headers.set('Content-Type', 'text/css; charset=utf-8');
+      headers.set('Cache-Control', 'public, max-age=86400');
       return new Response(cssContent, { headers });
     }
 
     if (pathname === '/readable.min.css') {
       headers.set('Content-Type', 'text/css; charset=utf-8');
+      headers.set('Cache-Control', 'public, max-age=86400');
       return new Response(readableCss, { headers });
     }
 
