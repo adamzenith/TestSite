@@ -1,3 +1,5 @@
+import { config } from './config.js';
+
 const HEAD_LINKS = `
     <link rel="stylesheet" type="text/css" href="/readable.min.css">
     <link rel="stylesheet" type="text/css" href="/styles.css">`;
@@ -5,10 +7,10 @@ const HEAD_LINKS = `
 const HEADER = `
     <header>
         <div class="profile-header">
-            <img class="profile-photo" src="/profile.jpg" alt="Photo of Matthias Adamsen">
+            <img class="profile-photo" src="${config.photo}" alt="Photo of ${config.name}">
             <div class="profile-title">
-                <h1>Matthias Adamsen</h1>
-                <p>A short tagline goes here &mdash; one line about what you do.</p>
+                <h1>${config.name}</h1>
+                <p>${config.tagline}</p>
             </div>
         </div>
     </header>`;
@@ -16,9 +18,9 @@ const HEADER = `
 const FOOTER = `
     <footer>
         <p>
-            &copy; <time datetime="2026">2026</time> Matthias Adamsen &middot;
-            <a href="https://github.com/">GitHub</a> &middot;
-            <a href="mailto:you@example.com">Email</a>
+            &copy; <time datetime="${config.year}">${config.year}</time> ${config.name} &middot;
+            <a href="${config.github}">GitHub</a> &middot;
+            <a href="mailto:${config.email}">Email</a>
         </p>
     </footer>`;
 
@@ -55,7 +57,7 @@ ${FOOTER}
 </html>`;
 
 const homePage = page({
-    title: 'Matthias Adamsen',
+    title: config.name,
     current: 'home',
     body: `        <p>
             Welcome. Use the links above to read more about me, my projects,
@@ -64,7 +66,7 @@ const homePage = page({
 });
 
 const aboutPage = page({
-    title: 'About me — Matthias Adamsen',
+    title: `About me — ${config.name}`,
     current: 'about',
     body: `        <section id="about">
             <h2>About me</h2>
@@ -78,13 +80,13 @@ const aboutPage = page({
             </p>
             <p>
                 You can reach me at
-                <a href="mailto:you@example.com">you@example.com</a>.
+                <a href="mailto:${config.email}">${config.email}</a>.
             </p>
         </section>`,
 });
 
 const projectsPage = page({
-    title: 'Notable projects — Matthias Adamsen',
+    title: `Notable projects — ${config.name}`,
     current: 'projects',
     body: `        <section id="projects">
             <h2>Notable projects</h2>
@@ -109,7 +111,7 @@ const projectsPage = page({
 });
 
 const booksPage = page({
-    title: 'Book reviews — Matthias Adamsen',
+    title: `Book reviews — ${config.name}`,
     current: 'books',
     body: `        <section id="books">
             <h2>Book reviews</h2>
