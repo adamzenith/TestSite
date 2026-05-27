@@ -4,5 +4,5 @@ export const config = {
     email: 'matthiasadamsen@pm.me',
     github: 'https://github.com/adamzenith',
     year: 2026,
-    photo: '/profile.jpg',
+    photo: '/profile.png',
 };
