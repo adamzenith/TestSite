@@ -133,9 +133,11 @@ const booksPage = page({
 
 const cssContent = `:root {
     color-scheme: light;
+    background: #e8dcc4;
+    color: #000;
 }
 
-html, body {
+body {
     background: #e8dcc4;
     color: #000;
 }
