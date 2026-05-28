@@ -5,5 +5,5 @@ export const config = {
   github: "https://github.com/adamzenith",
   year: 2026,
   photo: "/profile.png",
-  linkedin: "www.linkedin.com/in/matthias-adamsen-0175391a1",
+  linkedin: "https://linkedin.com/in/matthias-adamsen-0175391a1",
 };
