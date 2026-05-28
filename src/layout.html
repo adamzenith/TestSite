@@ -1,40 +1,43 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{title}}</title>
-    <link rel="stylesheet" type="text/css" href="/readable.min.css">
-    <link rel="stylesheet" type="text/css" href="/styles.css">
-</head>
-<body>
-    <header>
-        <div class="profile-header">
-            <img class="profile-photo" src="{{photo}}" alt="Photo of {{name}}">
-            <div class="profile-title">
-                <h1>{{name}}</h1>
-                <p>{{tagline}}</p>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{{title}}</title>
+        <link rel="stylesheet" type="text/css" href="/readable.min.css" />
+        <link rel="stylesheet" type="text/css" href="/styles.css" />
+    </head>
+    <body>
+        <header>
+            <div class="profile-header">
+                <img
+                    class="profile-photo"
+                    src="{{photo}}"
+                    alt="Photo of {{name}}"
+                />
+                <div class="profile-title">
+                    <h1>{{name}}</h1>
+                    <p>{{tagline}}</p>
+                </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <nav>
-        <a href="/">Home</a>
-        <a href="/about">About me</a>
-        <a href="/projects">Notable projects</a>
-        <a href="/books">Book reviews</a>
-    </nav>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/about">About me</a>
+            <a href="/projects">Notable projects</a>
+            <a href="/books">Book reviews</a>
+        </nav>
 
-    <main>
-{{body}}
-    </main>
+        <main>{{body}}</main>
 
-    <footer>
-        <p>
-            &copy; <time datetime="{{year}}">{{year}}</time> {{name}} &middot;
-            <a href="{{github}}">GitHub</a> &middot;
-            <a href="mailto:{{email}}">Email</a>
-        </p>
-    </footer>
-</body>
+        <footer>
+            <p>
+                &copy; <time datetime="{{year}}">{{year}}</time> {{name}}
+                &middot; <a href="{{github}}">GitHub</a> &middot;
+                <a href="mailto:{{email}}">Email</a> &middot;
+                <a href="{{linkedin}}"> LinkedIn</a>
+            </p>
+        </footer>
+    </body>
 </html>
