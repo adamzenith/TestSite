@@ -22,6 +22,25 @@
             </div>
         </header>
 
+        <div class="width-control" role="group" aria-label="Adjust content width">
+            <button
+                type="button"
+                class="width-btn"
+                data-width-step="-1"
+                aria-label="Decrease content width"
+            >
+                &minus;
+            </button>
+            <button
+                type="button"
+                class="width-btn"
+                data-width-step="1"
+                aria-label="Increase content width"
+            >
+                +
+            </button>
+        </div>
+
         <nav>
             <a href="/">Home</a>
             <a href="/about">About me</a>
@@ -39,5 +58,35 @@
                 <a href="{{linkedin}}"> LinkedIn</a>
             </p>
         </footer>
+
+        <script>
+            (function () {
+                var root = document.documentElement;
+                var MIN = 30,
+                    MAX = 120,
+                    STEP = 5,
+                    DEFAULT = 67;
+                var stored = parseInt(localStorage.getItem("column-width"), 10);
+                var width = isNaN(stored)
+                    ? DEFAULT
+                    : Math.min(MAX, Math.max(MIN, stored));
+                function apply() {
+                    root.style.setProperty("--column-width", width + "ch");
+                }
+                if (!isNaN(stored)) apply();
+                document
+                    .querySelectorAll("[data-width-step]")
+                    .forEach(function (btn) {
+                        btn.addEventListener("click", function () {
+                            var step =
+                                parseInt(btn.getAttribute("data-width-step"), 10) *
+                                STEP;
+                            width = Math.min(MAX, Math.max(MIN, width + step));
+                            apply();
+                            localStorage.setItem("column-width", width);
+                        });
+                    });
+            })();
+        </script>
     </body>
 </html>
