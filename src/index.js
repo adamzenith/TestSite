@@ -11,9 +11,33 @@ import profileImage from './profile.png';
 const interpolate = (template, vars) =>
     template.replace(/\{\{(\w+)\}\}/g, (m, key) => (key in vars ? vars[key] : m));
 
+const hashContent = (input) => {
+    const bytes =
+        typeof input === 'string'
+            ? new TextEncoder().encode(input)
+            : new Uint8Array(input);
+    let h = 5381;
+    for (let i = 0; i < bytes.length; i++) {
+        h = (((h << 5) + h) ^ bytes[i]) >>> 0;
+    }
+    return h.toString(36);
+};
+
+const versions = {
+    stylesVersion: hashContent(stylesCss),
+    readableVersion: hashContent(readableCss),
+    photoVersion: hashContent(profileImage),
+};
+
 const renderPage = (title, bodyTemplate) => {
-    const body = interpolate(bodyTemplate, config);
-    return interpolate(layoutTemplate, { ...config, title, body });
+    const ctx = {
+        ...config,
+        ...versions,
+        photo: `${config.photo}?v=${versions.photoVersion}`,
+        title,
+    };
+    const body = interpolate(bodyTemplate, ctx);
+    return interpolate(layoutTemplate, { ...ctx, body });
 };
 
 const pages = {
@@ -53,19 +77,19 @@ export default {
 
         if (pathname === '/styles.css') {
             headers.set('Content-Type', 'text/css; charset=utf-8');
-            headers.set('Cache-Control', 'public, max-age=86400');
+            headers.set('Cache-Control', 'public, max-age=31536000, immutable');
             return new Response(stylesCss, { headers });
         }
 
         if (pathname === '/readable.min.css') {
             headers.set('Content-Type', 'text/css; charset=utf-8');
-            headers.set('Cache-Control', 'public, max-age=86400');
+            headers.set('Cache-Control', 'public, max-age=31536000, immutable');
             return new Response(readableCss, { headers });
         }
 
         if (pathname === '/profile.png') {
             headers.set('Content-Type', 'image/png');
-            headers.set('Cache-Control', 'public, max-age=86400');
+            headers.set('Cache-Control', 'public, max-age=31536000, immutable');
             return new Response(profileImage, { headers });
         }
 

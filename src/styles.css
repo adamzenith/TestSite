@@ -2,6 +2,7 @@
     color-scheme: light;
     background: #e8dcc4;
     color: #000;
+    --column-width: 90ch;
 }
 
 body {

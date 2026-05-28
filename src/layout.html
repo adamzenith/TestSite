@@ -4,8 +4,8 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{{title}}</title>
-        <link rel="stylesheet" type="text/css" href="/readable.min.css" />
-        <link rel="stylesheet" type="text/css" href="/styles.css" />
+        <link rel="stylesheet" type="text/css" href="/readable.min.css?v={{readableVersion}}" />
+        <link rel="stylesheet" type="text/css" href="/styles.css?v={{stylesVersion}}" />
     </head>
     <body>
         <header>
@@ -65,7 +65,7 @@
                 var MIN = 30,
                     MAX = 120,
                     STEP = 5,
-                    DEFAULT = 67;
+                    DEFAULT = 90;
                 var stored = parseInt(localStorage.getItem("column-width"), 10);
                 var width = isNaN(stored)
                     ? DEFAULT
