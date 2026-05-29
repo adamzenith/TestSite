@@ -14,7 +14,11 @@ import http from "node:http";
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { fileURLToPath, pathToFileURL } from "node:url";
+
+const execFileP = promisify(execFile);
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -225,6 +229,40 @@ async function saveUpload(name, dataBase64) {
 }
 
 // ---------------------------------------------------------------------------
+// Git: stage everything, commit, push
+// ---------------------------------------------------------------------------
+
+async function git(args) {
+  return execFileP("git", args, { cwd: ROOT });
+}
+
+async function commitAndPush(message) {
+  if (!message || !message.trim()) throw new Error("Commit message is required.");
+
+  await git(["add", "-A"]);
+
+  try {
+    await git(["commit", "-m", message]);
+  } catch (err) {
+    const out = `${err.stdout || ""}${err.stderr || ""}`;
+    if (/nothing to commit/i.test(out)) {
+      throw new Error("Nothing to commit — no changes since the last commit.");
+    }
+    throw new Error(out.trim() || err.message);
+  }
+
+  // Commit succeeded. A failed push (no remote, auth, etc.) is reported but not
+  // treated as a hard error — the commit is safely on disk either way.
+  try {
+    const { stderr } = await git(["push"]);
+    return { committed: true, pushed: true, detail: (stderr || "").trim() };
+  } catch (err) {
+    const detail = `${err.stderr || ""}${err.stdout || ""}`.trim();
+    return { committed: true, pushed: false, detail: detail || err.message };
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Live reload (SSE + fs.watch)
 // ---------------------------------------------------------------------------
 
@@ -355,6 +393,10 @@ const server = http.createServer(async (req, res) => {
           }
           if (ep === "upload") {
             const result = await saveUpload(data.name, data.dataBase64);
+            return sendJSON(res, 200, { ok: true, ...result });
+          }
+          if (ep === "commit") {
+            const result = await commitAndPush(data.message);
             return sendJSON(res, 200, { ok: true, ...result });
           }
         } catch (err) {

@@ -175,7 +175,7 @@
       payload = { page: STATE.page, html: clone.innerHTML, mode: "visual" };
     }
     saveBtn.disabled = true;
-    api("save", {
+    return api("save", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -187,7 +187,44 @@
       .catch(function (e) {
         saveBtn.disabled = false;
         toast("Save failed: " + e.message);
+        throw e;
       });
+  }
+
+  // ---- commit & push ------------------------------------------------------
+
+  function commitChanges() {
+    modal(
+      "Commit & push",
+      [
+        {
+          name: "message",
+          label: "Commit message",
+          placeholder: "Describe your changes",
+          hint: "Runs: git add -A && git commit -m … && git push",
+        },
+      ],
+      function (v, ui) {
+        if (!v.message) return ui.error("Enter a commit message.");
+        var run = function () {
+          return api("commit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: v.message }),
+          }).then(function (res) {
+            ui.close();
+            if (res.pushed) {
+              toast("Committed & pushed ✓");
+            } else {
+              toast("Committed ✓ — push failed (see console)");
+              console.warn("[editor] git push failed:\n" + res.detail);
+            }
+          });
+        };
+        // Persist any in-progress edits before committing.
+        return dirty ? save().then(run) : run();
+      },
+    );
   }
 
   // ---- formatting ---------------------------------------------------------
@@ -637,6 +674,12 @@
     el("div", { class: "ed-spacer" }),
     statusEl,
     saveBtn,
+    el("button", {
+      class: "ed-btn",
+      text: "⬆ Commit",
+      title: "git add -A && git commit && git push",
+      onclick: commitChanges,
+    }),
   ]);
   document.body.appendChild(bar);
 
