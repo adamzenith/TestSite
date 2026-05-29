@@ -1,12 +1,26 @@
 import { config } from "./config.js";
+import { pageList } from "./pages.config.js";
 import layoutTemplate from "./layout.html";
+import stylesCss from "./styles.css";
+import readableCss from "./readable.min.css";
+import profileImage from "./profile.png";
+
+// PAGE-BODIES:START — managed by the editor (npm run edit).
+// Keep exactly one import line and one `bodies` entry per page. Map keys must match a slug in pages.config.js.
+import blogsBody from "./pages/blogs.html";
 import homeBody from "./pages/home.html";
 import aboutBody from "./pages/about.html";
 import projectsBody from "./pages/projects.html";
 import booksBody from "./pages/books.html";
-import stylesCss from "./styles.css";
-import readableCss from "./readable.min.css";
-import profileImage from "./profile.png";
+
+const bodies = {
+  home: homeBody,
+  about: aboutBody,
+  projects: projectsBody,
+  books: booksBody,
+  "blogs": blogsBody,
+};
+// PAGE-BODIES:END
 
 const interpolate = (template, vars) =>
   template.replace(/\{\{(\w+)\}\}/g, (m, key) => (key in vars ? vars[key] : m));
@@ -29,34 +43,32 @@ const versions = {
   photoVersion: hashContent(profileImage),
 };
 
-const renderPage = (title, bodyTemplate) => {
+const navHtml = pageList
+  .map((p) => `<a href="${p.path}">${p.nav}</a>`)
+  .join("\n            ");
+
+const renderPage = (page) => {
   const ctx = {
     ...config,
     ...versions,
+    nav: navHtml,
     photo: `${config.photo}?v=${versions.photoVersion}`,
-    title,
   };
-  const body = interpolate(bodyTemplate, ctx);
+  ctx.title = interpolate(page.title, ctx);
+  const body = interpolate(bodies[page.slug] ?? "", ctx);
   return interpolate(layoutTemplate, { ...ctx, body });
 };
 
-const pages = {
-  home: renderPage(config.name, homeBody),
-  about: renderPage(`About me — ${config.name}`, aboutBody),
-  projects: renderPage(`Notable projects — ${config.name}`, projectsBody),
-  books: renderPage(`Favorite books — ${config.name}`, booksBody),
-};
-
-const routes = {
-  "/": pages.home,
-  "/index.html": pages.home,
-  "/about": pages.about,
-  "/about.html": pages.about,
-  "/projects": pages.projects,
-  "/projects.html": pages.projects,
-  "/books": pages.books,
-  "/books.html": pages.books,
-};
+const routes = {};
+for (const page of pageList) {
+  const html = renderPage(page);
+  routes[page.path] = html;
+  if (page.path === "/") {
+    routes["/index.html"] = html;
+  } else {
+    routes[`${page.path}.html`] = html;
+  }
+}
 
 export default {
   async fetch(request, env, ctx) {
